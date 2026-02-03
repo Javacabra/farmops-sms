@@ -69,6 +69,14 @@ class CommandParser:
         if any(q in lower for q in self.QUERY_WORDS):
             return self._parse_query(text, lower)
         
+        # Check for adding cattle BEFORE health events (born triggers both)
+        if any(w in lower for w in ["add", "new", "bought", "got"]):
+            return self._parse_add(text, lower)
+        
+        # Check for adding via birth (calf born today)
+        if "born" in lower and any(w in lower for w in ["calf", "calve", "baby"]):
+            return self._parse_add(text, lower)
+        
         # Check for sale
         if any(w in lower for w in ["sold", "sale", "sell"]):
             return self._parse_sale(text, lower)
@@ -80,10 +88,6 @@ class CommandParser:
         # Check for movement
         if any(w in lower for w in ["moved", "move", "moving", "went", "put", "in the", "to the"]):
             return self._parse_move(text, lower)
-        
-        # Check for adding cattle
-        if any(w in lower for w in ["add", "new", "born", "bought", "got"]):
-            return self._parse_add(text, lower)
         
         # Try to infer from context
         return self._infer_command(text, lower)
