@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FarmOps - Cattle Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #2d5016 0%, #4a7c23 100%);
+            color: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        header h1 {
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        header p {
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+        
+        .stat-card .number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #2d5016;
+        }
+        
+        .stat-card .label {
+            color: #666;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .stat-card.sales .number {
+            color: #1a73e8;
+        }
+        
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .section h2 {
+            margin-bottom: 15px;
+            color: #2d5016;
+            border-bottom: 2px solid #e8f0e3;
+            padding-bottom: 10px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .tag {
+            display: inline-block;
+            background: #e8f0e3;
+            color: #2d5016;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        
+        .type-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-transform: capitalize;
+        }
+        
+        .type-cow { background: #ffeaa7; color: #6c5400; }
+        .type-bull { background: #fd79a8; color: #6c0030; }
+        .type-calf { background: #81ecec; color: #005757; }
+        .type-steer { background: #a29bfe; color: #2d2475; }
+        .type-heifer { background: #fdcb6e; color: #6c4400; }
+        
+        .event-list {
+            list-style: none;
+        }
+        
+        .event-item {
+            display: flex;
+            gap: 15px;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .event-item:last-child {
+            border-bottom: none;
+        }
+        
+        .event-date {
+            color: #666;
+            font-size: 0.85rem;
+            min-width: 100px;
+        }
+        
+        .event-type {
+            font-weight: 600;
+            color: #2d5016;
+            text-transform: capitalize;
+        }
+        
+        .event-details {
+            color: #555;
+        }
+        
+        .event-tag {
+            color: #888;
+            font-size: 0.85rem;
+        }
+        
+        .location {
+            color: #666;
+            font-style: italic;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #888;
+        }
+        
+        .sms-commands {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+        
+        .sms-commands li {
+            margin: 8px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .sms-commands li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #2d5016;
+        }
+        
+        .two-col {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .two-col {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            table {
+                font-size: 0.85rem;
+            }
+            
+            th, td {
+                padding: 8px;
+            }
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #888;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🐄 FarmOps</h1>
+            <p>Cattle Management via SMS • {{ today.strftime('%B %d, %Y') }}</p>
+        </header>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="number">{{ stats.total_head }}</div>
+                <div class="label">Total Head</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">{{ stats.calves_ytd }}</div>
+                <div class="label">Calves YTD</div>
+            </div>
+            <div class="stat-card sales">
+                <div class="number">{{ stats.sales_ytd_head }}</div>
+                <div class="label">Sold YTD</div>
+            </div>
+            <div class="stat-card sales">
+                <div class="number">${{ "{:,.0f}".format(stats.sales_ytd_amount) }}</div>
+                <div class="label">Revenue YTD</div>
+            </div>
+        </div>
+        
+        <div class="two-col">
+            <div class="section">
+                <h2>🐄 Cattle Inventory</h2>
+                {% if cattle %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tag</th>
+                            <th>Type</th>
+                            <th>Breed</th>
+                            <th>Location</th>
+                            <th>Birth Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in cattle %}
+                        <tr>
+                            <td><span class="tag">{{ c.tag or 'N/A' }}</span></td>
+                            <td><span class="type-badge type-{{ c.type }}">{{ c.type }}</span></td>
+                            <td>{{ c.breed or 'Angus' }}</td>
+                            <td class="location">{{ c.location_name or '—' }}</td>
+                            <td>{{ c.birth_date or '—' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <div class="empty-state">
+                    <p>No cattle records yet.</p>
+                    <p>Text your first entry to get started!</p>
+                </div>
+                {% endif %}
+            </div>
+            
+            <div>
+                <div class="section">
+                    <h2>📋 Recent Events</h2>
+                    {% if stats.recent_events %}
+                    <ul class="event-list">
+                        {% for e in stats.recent_events[:7] %}
+                        <li class="event-item">
+                            <div>
+                                <span class="event-date">{{ e.event_date }}</span>
+                                <span class="event-type">{{ e.event_type }}</span>
+                                {% if e.tag %}<span class="event-tag">#{{ e.tag }}</span>{% endif %}
+                                <div class="event-details">{{ e.details or '' }}</div>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <div class="empty-state">No events recorded yet.</div>
+                    {% endif %}
+                </div>
+                
+                <div class="section">
+                    <h2>📱 SMS Commands</h2>
+                    <ul class="sms-commands">
+                        <li>Add calf born today red tag</li>
+                        <li>Cow 42 to north pasture</li>
+                        <li>Vet cow 15 pink eye</li>
+                        <li>Sold 5 steers $1.85/lb avg 1100</li>
+                        <li>How many calves this month</li>
+                        <li>Status</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            FarmOps SMS • Built for ranchers, by ranchers 🤠
+        </footer>
+    </div>
+    
+    <script>
+        // Auto-refresh every 30 seconds
+        setTimeout(() => location.reload(), 30000);
+    </script>
+</body>
+</html>
